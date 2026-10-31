@@ -31,7 +31,7 @@ function preload(){
     cloudOneImg = loadImage("nuvem-1.png")
     cloudTwoImg = loadImage("nuvem-2.png")
 
-    obstacles1 = loadImage("policial-1.png")
+    obstacles1 = loadImage("police.png")
     obstacles2 = loadImage("foguete.png")
 
     restartImg = loadImage("restart (1).png")
@@ -56,6 +56,19 @@ function setup(){
     invisibleground.visible = false;
 
     cloudGroup = new Group();
+    obstaclesGroup = new Group();
+    policeGroup = new Group();
+
+    gameOver = createSprite(width/2,height/2);
+    gameOver.addImage(gameOverImg);
+    gameOver.scale = 0.5;
+    gameOver.visible = false
+
+    restart = createSprite(width/2,height/2 + 40);
+    restart.addImage(restartImg);
+    restart.scale = 0.5;
+    restart.visible = false
+
 }
 
 function draw(){
@@ -81,8 +94,13 @@ function draw(){
 
         spawnClouds()
         spawnObstacles()
+        spawnPolice()
 
          if(obstaclesGroup.isTouching(bandit)){
+            gameState = END;
+        
+        }
+         if(policeGroup.isTouching(bandit)){
             gameState = END;
         
         }
@@ -93,10 +111,12 @@ function draw(){
     else if(gameState === END){
         ground.velocityX = 0;
         obstaclesGroup.setVelocityXEach(0);
+        policeGroup.setVelocityXEach(0);
         cloudGroup.setVelocityXEach(0);
         bandit.changeAnimation("collided",banditcollided);
         bandit.velocityY = 0;
         obstaclesGroup.setLifetimeEach(-1);
+        policeGroup.setLifetimeEach(-1);
         cloudGroup.setLifetimeEach(-1);
         gameOver.visible = true;
         restart.visible = true;
@@ -136,29 +156,35 @@ function spawnClouds(){
 }
 
 function spawnObstacles(){
-    if(frameCount % 120 == 0){
-        let obstacles = createSprite(width + 5,height - 87,10,40);
-        obstacles.velocityX = time
-        switch(rand){
-            case 1:
-                obstacles.addImage(obstacles1);
-                break;
-            case 2:
-                obstacles.addImage(obstacles2);
-                break;
-            default:
-                break;
-                
-        }
-        obstacles.lifetime = width / time;
-        obstaclesGroup.add(obstacles);
+    if(frameCount % 280 == 0){
+        let obstacle = createSprite(width + 5,random(650,600));
+        obstacle.addImage(obstacles2);
+         let time = -(4+3*score/1000);
+        obstacle.velocityX = time;
+        obstacle.scale = 2
+        obstacle.lifetime = width / time;
+        obstaclesGroup.add(obstacle);
     }
 }
+
+function spawnPolice(){
+     if(frameCount % 120 == 0){
+        let obstacle = createSprite(width + 5,665);
+        obstacle.addImage(obstacles1);
+         let time = -(4+3*score/1000);
+        obstacle.velocityX = time;
+        obstacle.scale = 3
+        obstacle.lifetime = width / time;
+        policeGroup.add(obstacle);
+    }
+
+}        
 
 function reset(){
     gameState = PLAY;
     gameOver.visible = false;
     obstaclesGroup.destroyEach();
+    policeGroup.destroyEach();
     cloudGroup.destroyEach();
     bandit.changeAnimation("running",banditImg)
     score = 0
