@@ -19,7 +19,7 @@ let restart;
 let restartImg;
 
 const PLAY = 1;
-const END = 1;
+const END = 0;
 let gameState = PLAY;
 
 function preload(){
